@@ -49,11 +49,13 @@ header "Configuration"
 
 mkdir -p /var/log/c-icap
 mkdir -p /run/c-icap 
+mkdir -p /certs
 
 mv /squidclamav.conf /etc/c-icap/squidclamav.conf
 
 chown -R c-icap:c-icap /var/log/c-icap
 chown -R c-icap:c-icap /run/c-icap 
+chown  c-icap:c-icap /certs
 chown  c-icap:c-icap /c-icap.conf
 
 header "Cleanup"

@@ -9,9 +9,6 @@ services:
     hostname: calmav
     stop_grace_period: 10s
 
-    environment:
-      LANG: en_US.UTF-8
-
     ports:
       - 3310:3310 
 
@@ -26,15 +23,14 @@ services:
     stop_grace_period: 10s
 
     environment:
-      LANG: en_US.UTF-8
+      LOG_LEVEL: 2
 
     ports:
       - 1344:1344
       - 11344:11344
 
     volumes:
-      - /local/cert.pem:/cert.pem:ro
-      - /local/key.pem:/key.pem:ro
+      - ${CERT_DIR}:/certs:Z
 
     networks:
       server_net:

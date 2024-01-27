@@ -16,6 +16,9 @@ RUN /install.sh && \
 
 EXPOSE 1344 11344
 
+HEALTHCHECK --interval=120s --timeout=10s --start-period=60s CMD /healthcheck.sh
+
 ENTRYPOINT ["/entrypoint.sh"]
 
 USER 1000
+
