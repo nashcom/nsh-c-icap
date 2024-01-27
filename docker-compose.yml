@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+
+  clamav:
+
+    image: clamav/clamav:latest 
+    container_name: clamav 
+    hostname: calmav
+    stop_grace_period: 30s
+
+    environment:
+      LANG: en_US.UTF-8
+
+    ports:
+      - 3310:3310 
+
+    networks:
+      server_net:
+
+  c-icap:
+
+    image: nashcom/c-icap 
+    container_name: c-icap 
+    hostname: c-icap 
+    stop_grace_period: 30s
+
+    environment:
+      LANG: en_US.UTF-8
+
+    ports:
+      - 1344:1344 
+
+    networks:
+      server_net:
+
+    depends_on:
+      clamav:
+        condition: service_healthy
+
+networks:
+
+  server_net:
+    driver: bridge
