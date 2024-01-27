@@ -54,6 +54,7 @@ mv /squidclamav.conf /etc/c-icap/squidclamav.conf
 
 chown -R c-icap:c-icap /var/log/c-icap
 chown -R c-icap:c-icap /run/c-icap 
+chown  c-icap:c-icap /c-icap.conf
 
 header "Cleanup"
 

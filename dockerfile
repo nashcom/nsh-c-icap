@@ -14,7 +14,7 @@ COPY /install /
 RUN /install.sh && \
   rm -f /install
 
-EXPOSE 1344
+EXPOSE 1344 11344
 
 ENTRYPOINT ["/entrypoint.sh"]
 

@@ -22,14 +22,19 @@ services:
 
     image: nashcom/c-icap 
     container_name: c-icap 
-    hostname: c-icap 
+    hostname: ${ICAP_HOSTNAME} 
     stop_grace_period: 10s
 
     environment:
       LANG: en_US.UTF-8
 
     ports:
-      - 1344:1344 
+      - 1344:1344
+      - 11344:11344
+
+    volumes:
+      - /local/cert.pem:/cert.pem:ro
+      - /local/key.pem:/key.pem:ro
 
     networks:
       server_net:

@@ -16,8 +16,17 @@ mkdir /tmp/c-icap
 # Dump environment
 set > /tmp/c-icap/env.log
 
-# Substistute variables and create configuration
-#envsubst < /nginx.conf > /tmp/nginx/nginx.conf
+if [ -e /cert.pem ] && [ -e /key.pem ]; then
+
+  if [ -z "$TLS_PORT" ]; then
+    TLS_PORT=11344
+  fi
+
+  echo "TlsPort $TLS_PORT cert=/cert.pem key=/key.pem" >> /c-icap.conf
+
+  echo "TLS enabled on port $TLS_PORT"
+fi
+
 
 LINUX_PRETTY_NAME=$(cat /etc/os-release | grep "PRETTY_NAME="| cut -d= -f2 | xargs)
 
