@@ -77,8 +77,8 @@ create_local_ca_cert()
   # Create server cert
   openssl req -new -key $SERVER_KEY -out $SERVER_CSR -subj "/O=$ORG_NAME/CN=$HOSTNAME" -addext "subjectAltName = DNS:$HOSTNAME" -addext extendedKeyUsage=serverAuth
 
-  # OpenSSL 3.0 supports new flags
-  openssl x509 -req -days 3650 -in $SERVER_CSR -CA $CA_CERT -CAkey $CA_KEY -out $SERVER_CERT -CAcreateserial -CAserial $CA_SEQ -copy_extensions copy # Copying extensions can be dangerous! Requests should be checked
+  # OpenSSL 3.0 supports new flags to simplify operations. Create a certificate for 1 year
+  openssl x509 -req -days 365 -in $SERVER_CSR -CA $CA_CERT -CAkey $CA_KEY -out $SERVER_CERT -CAcreateserial -CAserial $CA_SEQ -copy_extensions copy # Copying extensions can be dangerous! Requests should be checked
 
   # Add the CA root
   cat "$CA_CERT" >> "$SERVER_CERT"
@@ -117,11 +117,11 @@ show_cert()
 
 # Configuration
 
-if [ -z "$ORG_NAME" ] then;
+if [ -z "$ORG_NAME" ]; then
   ORG_NAME=c-icap-server
 fi
 
-if [ -z "$CA_NAME" ] then;
+if [ -z "$CA_NAME" ]; then
   CA_NAME=c-icap-ca
 fi
 
