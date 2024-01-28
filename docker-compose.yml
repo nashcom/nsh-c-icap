@@ -9,8 +9,8 @@ services:
     hostname: calmav
     stop_grace_period: 10s
 
-    ports:
-      - 3310:3310 
+    #ports:
+    #  - 3310:3310 
 
     networks:
       server_net:

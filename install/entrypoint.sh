@@ -35,6 +35,22 @@ log_debug()
 }
 
 
+print_delim()
+{
+  echo "--------------------------------------------------------------------------------"
+}
+
+
+header()
+{
+  echo
+  print_delim
+  echo "$1"
+  print_delim
+  echo
+}
+
+
 remove_file()
 {
   if [ -z "$1" ]; then
@@ -45,7 +61,7 @@ remove_file()
     return 2
   fi
 
-  ERR_TXT=$(rm -f "$1" >/dev/null 2>/dev/null)
+  rm -f "$1" >/dev/null 2>/dev/null
 
   if [ -e "$1" ]; then
     echo "Info: File not deleted [$1]"
@@ -75,7 +91,7 @@ create_local_ca_cert()
   fi
 
   # Create server cert
-  openssl req -new -key $SERVER_KEY -out $SERVER_CSR -subj "/O=$ORG_NAME/CN=$HOSTNAME" -addext "subjectAltName = DNS:$HOSTNAME" -addext extendedKeyUsage=serverAuth
+  openssl req -new -key $SERVER_KEY -out $SERVER_CSR -subj "/O=$ORG_NAME/CN=$HOSTNAME" -addext "subjectAltName = DNS:$HOSTNAME" -addext extendedKeyUsage="serverAuth,clientAuth"
 
   # OpenSSL 3.0 supports new flags to simplify operations. Create a certificate for 1 year
   openssl x509 -req -days 365 -in $SERVER_CSR -CA $CA_CERT -CAkey $CA_KEY -out $SERVER_CERT -CAcreateserial -CAserial $CA_SEQ -copy_extensions copy # Copying extensions can be dangerous! Requests should be checked
@@ -148,17 +164,9 @@ fi
 # Set more paranoid umask to ensure files can be only read by user
 umask 0077
 
-# Create log directory with owner nginx
-mkdir /tmp/c-icap
-
-
 # Dump environment
-set > /tmp/c-icap/env.log
+set > /var/log/c-icap/env.log
 
-
-if [ -z "$TLS_PORT" ]; then
-  TLS_PORT=11344
-fi
 
 HOSTNAME=$(hostname -f)
 
@@ -171,50 +179,45 @@ else
 fi
 
 
-if [ -e "$SERVER_KEY" ] && [ -e "$SERVER_CERT" ]; then
-  echo "TlsPort $TLS_PORT cert=$SERVER_CERT key=$SERVER_KEY" >> /c-icap.conf
-  echo "TLS enabled on port $TLS_PORT"
-fi
-
-
 LINUX_PRETTY_NAME=$(cat /etc/os-release | grep "PRETTY_NAME="| cut -d= -f2 | xargs)
 
 if [ "$LOG_LEVEL" -ge "2" ]; then
   echo
   echo Environment
-  echo ------------------------------------------------------------
+  print_delim
   set
-  echo ------------------------------------------------------------
+  print_delim
   echo
   echo Configuration
-  echo ------------------------------------------------------------
+  print_delim
   cat -n "$CICAP_CFG"
-  echo ------------------------------------------------------------
+  print_delim
   echo
 fi
+
 
 if [ "$LOG_LEVEL" -ge "2" ]; then
   echo
   echo c-icap Details
-  echo ------------------------------------------------------------
+  print_delim
   c-icap -VV
-  echo ------------------------------------------------------------
+  print_delim
   echo
 fi
 
 
 echo
 echo $LINUX_PRETTY_NAME
-echo ------------------------------------------------------------
+print_delim
 echo
 echo c-icap Server $(c-icap -V)
-echo ------------------------------------------------------------
+print_delim
 
 echo
 echo Certificate
-echo ------------------------------------------------------------
+print_delim
 show_cert "$SERVER_CERT"
-echo ------------------------------------------------------------
+print_delim
 echo
 echo
 
