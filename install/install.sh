@@ -20,19 +20,46 @@ header()
   echo
 }
 
+log_space()
+{
+  echo
+  echo "$@"
+  echo
+}
+
+
+log_error()
+{
+  echo
+  echo "ERROR - $@"
+  echo
+}
+
+
 # --- End Helper functions ---
 
 
-header "Updating Linux via yum"
-#/usr/bin/yum update -y
+if [ -z "$C_ICAP_VERSION" ]; then
+  log_error "c-icap version not defined"
+  exit 1
+fi
+
+if [ -z "$SQUIDCLAM_VERSION" ]; then
+  log_error "SquidClam version not defined"
+  exit 1
+fi
 
 
-header "Install epel-release"
-yum install -y epel-release
+if [ "$LINUX_UPDATE" = "yes" ]; then
+  header "Updating Linux"
+  microdnf -y update
+else
+  log_space "Warning: Not updating Linux"
+fi
 
 
 header "Install packages"
-yum install -y procps-ng hostname gettext bind-utils findutils
+microdnf install -y procps-ng hostname gettext bind-utils findutils libatomic openssl shadow-utils
 
 
 header "Create c-icap user&group"
@@ -41,24 +68,33 @@ groupadd c-icap --gid 1000
 useradd c-icap -m --gid 1000 --uid 1000
 
 
-header "Install c-icap"
-yum install -y c-icap
-
-
 header "Configuration"
 
 mkdir -p /var/log/c-icap
 mkdir -p /run/c-icap 
+mkdir -p /etc/c-icap
 mkdir -p /certs
+mkdir -p /usr/lib64/c_icap
 
-mv /squidclamav.conf /etc/c-icap/squidclamav.conf
+if [ ! -e "/usr/lib64/libicapapi.so" ]; then
+  log_error "Cannot find /usr/lib64/libicapapi.so"
+  exit 1
+fi
 
-chown -R c-icap:c-icap /var/log/c-icap
-chown -R c-icap:c-icap /run/c-icap 
-chown  c-icap:c-icap /certs
-chown  c-icap:c-icap /c-icap.conf
+ln -s /usr/lib64/libicapapi.so /usr/lib64/libicapapi.so.0
+
+
+#cp /squidclamav.conf /etc/c-icap/squidclamav.conf
+cp /squidclamav.conf /usr/local/etc/squidclamav.conf
+
+chown c-icap:c-icap /var/log/c-icap
+chown c-icap:c-icap /run/c-icap
+chown c-icap:c-icap /certs
+chown c-icap:c-icap /etc/c-icap
+chown c-icap:c-icap /c-icap.conf
 
 header "Cleanup"
 
-/usr/bin/yum clean all >/dev/null
-rm -fr /var/cache/yum
+microdnf remove -y shadow-utils
+usr/bin/microdnf clean all >/dev/null
+

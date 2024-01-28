@@ -7,8 +7,15 @@ c-icap container image with Squid ClamAV integration
 This project provides an easy to use container image to provide [ICAP](https://datatracker.ietf.org/doc/html/rfc3507) support for the Open Source standard virus scanner [ClamAV](https://www.clamav.net/).
 ClamAV provides it's own protocol, which can be consumed leveraging a UNIX socket or TCP/IP connection.
 
+The [c-icap](https://github.com/c-icap/c-icap-server) project is a standard project included in many Linux distributions to provide the ICAP protocols for applications.
+
+
 The [SquidClamav](https://squidclamav.darold.net/) project provides the bride between ClamAV and ICAP.
 ICAP itself is the standard used by Proxies like Squid. But ICAP as a protocol is also supported by appliances and products like [HCL Domino CScan](https://help.hcltechsw.com/domino/14.0.0/admin/conf_scanningattachmentsforviruses.html).
+
+This repository consumes both GitHub projects to build the container image based on a [Redhat Universal Base Image (UBI)](https://www.redhat.com/en/blog/introducing-red-hat-universal-base-image).
+The RedHat UBI minimal based image provides a small footprint Linux container image.
+
 
 
 ## Get repository

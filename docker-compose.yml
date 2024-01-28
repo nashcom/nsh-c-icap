@@ -4,7 +4,7 @@ services:
 
   clamav:
 
-    image: clamav/clamav:latest 
+    image: clamav/clamav-debian:latest
     container_name: clamav 
     hostname: calmav
     stop_grace_period: 10s
