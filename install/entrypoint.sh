@@ -156,7 +156,7 @@ SERVER_CSR=$CERT_DIR/csr.pem
 CICAP_CFG=/c-icap.conf
 
 
-if [-z "$CICAP_LOG_LEVEL" ]; then
+if [ -z "$CICAP_LOG_LEVEL" ]; then
   CICAP_LOG_LEVEL=3
 fi
 
