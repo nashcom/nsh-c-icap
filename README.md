@@ -111,6 +111,18 @@ For custom certificates provide the following two files in the **/certs** direct
 - key.pem
 
 
+## Tested environments
+
+- Docker on Linux
+- Podman on Linux
+- Docker Desktop on Windows
+- Docker Desktop on MacOS
+
+On Linux ARM and Mac Apple Silicon (M1/M2) an Linux ARM image is created.  
+The resulting image is always a Redhat UBI image.
+
+
+
 ## Testing and troubleshooting
 
 The c-icap project offers a simple to use ICAP client in addition to the server components.

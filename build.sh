@@ -17,9 +17,9 @@ CONTAINER_MAINTAINER="daniel.nashed@nashcom.de"
 CONTAINER_VENDOR="Nash!Com"
 
 CONTAINER_OPENSHIFT_EXPOSED_SERVICES="1344:icap 11344:icaps"
-CONTAINER_ARCHITECTURE=x86_64
+CONTAINER_ARCHITECTURE=$(uname -m)
 CONTAINER_OPENSHIFT_MIN_MEMORY="2Gi"
-CONTAINER_OPENSHIFT_MIN_CPU=2
+CONTAINER_OPENSHIFT_MIN_CPU=1
 
 CONTAINER_OPTIONS=
 CONTAINER_PULL_OPTION=
@@ -27,9 +27,47 @@ LINUX_UPDATE=yes
 
 BUILDTIME=$(date -Iseconds)
 
-if [ -z "$CONTAINER_CMD" ]; then
-  CONTAINER_CMD=docker
-fi
+
+detect_container_environment()
+{
+
+  if [ -n "$CONTAINER_CMD" ]; then
+    return 0
+  fi
+
+  if [ -n "$USE_DOCKER" ]; then
+     CONTAINER_CMD=docker
+     return 0
+  fi
+
+  CONTAINER_RUNTIME_VERSION_STR=$(podman -v 2> /dev/null | head -1)
+  if [ -n "$CONTAINER_RUNTIME_VERSION_STR" ]; then
+    CONTAINER_CMD=podman
+    return 0
+  fi
+
+  CONTAINER_RUNTIME_VERSION_STR=$(nerdctl -v 2> /dev/null | head -1)
+  if [ -n "$CONTAINER_RUNTIME_VERSION_STR" ]; then
+    CONTAINER_CMD=nerdctl
+    return 0
+  fi
+
+  CONTAINER_RUNTIME_VERSION_STR=$(docker -v 2> /dev/null | head -1)
+  if [ -n "$CONTAINER_RUNTIME_VERSION_STR" ]; then
+    CONTAINER_CMD=docker
+    return 0
+  fi
+
+  if [ -z "$CONTAINER_CMD" ]; then
+    log "No container environment detected!"
+    exit 1
+  fi
+
+  return 0
+}
+
+detect_container_environment
+
 
 if [ -z "$CONTAINER_NETWORK" ]; then
   if [ -n "$CONTAINER_NETWORK_NAME" ]; then
@@ -37,7 +75,15 @@ if [ -z "$CONTAINER_NETWORK" ]; then
   fi
 fi
 
+
+if [ -z "$BUILDAH_FORMAT" ]; then
+  BUILDAH_FORMAT=docker
+fi
+
+
+export BUILDAH_FORMAT
 export BUILDKIT_PROGRESS=plain
+
 
 # Build the multi stage image
 
@@ -85,3 +131,4 @@ elif [ ! $minutes = 0 ] ; then echo "Completed in $minutes minute$m and $seconds
 else echo "Completed in $seconds second$s"; fi
 echo
 
+chmod 777 certs
