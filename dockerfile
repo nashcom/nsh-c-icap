@@ -7,7 +7,7 @@ ARG LINUX_UPDATE=yes
 ARG SPECIAL_CURL_ARGS=
 
 USER root
-COPY compile.sh /
+COPY container_compile /
 RUN /compile.sh
 
 FROM $BASE_IMAGE as c-icap
@@ -26,7 +26,7 @@ COPY --from=compile /squidclamav.so /usr/lib64/c_icap/squidclamav.so
 
 #COPY squidclamav.so /usr/lib64/c_icap/squidclamav.so
 
-COPY /install /
+COPY container_install /
 RUN /install.sh && \
   rm -f /install
 

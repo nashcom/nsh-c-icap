@@ -132,9 +132,3 @@ else echo "Completed in $seconds second$s"; fi
 echo
 
 
-# Depending which user owns the files, the volume will not work for the 1000:1000 user in container.
-# Change the permissions on first run.
-
-if [ -z "$(find certs -name "*.pem")" ]; then
-  chmod 777 certs
-fi

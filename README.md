@@ -159,7 +159,7 @@ A remote server should import and trust the CA certificate.
 
 
 ```
-c-icap-client -s clamav -p 11344 icap.myserver.com -tls -tls-no-verify -f eicar.txt -v
+c-icap-client -s clamav -p 11344 -i icap.myserver.com -tls -tls-no-verify -f eicar.txt -v
 ```
 
 

@@ -30,7 +30,7 @@ services:
       - 11344:11344
 
     volumes:
-      - ${CERT_DIR}:/certs:Z
+      - certs:/certs:z
 
     networks:
       server_net:
@@ -39,7 +39,10 @@ services:
       clamav:
         condition: service_healthy
 
-networks:
+volumes:
+  certs:
+    driver: local
 
+networks:
   server_net:
     driver: bridge
