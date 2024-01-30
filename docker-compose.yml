@@ -5,22 +5,26 @@ services:
   clamav:
 
     image: clamav/clamav-debian:latest
-    container_name: clamav 
+    container_name: clamav
     hostname: calmav
-    stop_grace_period: 10s
+    stop_grace_period: 5s
 
-    #ports:
-    #  - 3310:3310 
+    # disable unencrypted port by default
+    # ports:
+    #  - 3310:3310
+
+    volumes:
+      - clamav-db:/var/lib/clamav
 
     networks:
       server_net:
 
   c-icap:
 
-    image: nashcom/c-icap 
-    container_name: c-icap 
-    hostname: ${ICAP_HOSTNAME} 
-    stop_grace_period: 10s
+    image: nashcom/c-icap
+    container_name: c-icap
+    hostname: ${ICAP_HOSTNAME}
+    stop_grace_period: 5s
 
     environment:
       LOG_LEVEL: 2
@@ -30,19 +34,54 @@ services:
       - 11344:11344
 
     volumes:
-      - certs:/certs:z
+      - certs:/certs
 
     networks:
       server_net:
+
+    healthcheck:
+      test: ["CMD", "/healthcheck.sh"]
+      interval: 120s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
 
     depends_on:
       clamav:
         condition: service_healthy
 
+  clamav-tls:
+
+    image: nginx
+    container_name: clamav-tls
+    hostname: nginx
+    stop_grace_period: 5s
+
+    ports:
+      - 3311:3311
+
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:z
+      - certs:/certs
+
+    networks:
+      server_net:
+
+    profiles: [clamav-tls]
+
+    depends_on:
+      c-icap:
+        condition: service_healthy
+
 volumes:
+
   certs:
-    driver: local
+    external: false
+
+  clamav-db:
+    external: false
 
 networks:
+
   server_net:
     driver: bridge

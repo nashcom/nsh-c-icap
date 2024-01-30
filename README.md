@@ -100,15 +100,32 @@ The following services are exposed
 
 ## TLS Certificate/Key
 
-Certificates and keys are located in the **/certs** directory.
+Certificates and keys are located in the **/certs** mount.
 If no certificate/key is provided, the container creates it's own root CA and issues a new server certificate on start (valid for 365 days).
 The root CA is valid for 10 years and is maintained in the **/certs** directory.
 Therefore a volume mount is required to store the CA key and certificate permanently.
 
-For custom certificates provide the following two files in the **/certs** directory in PEM format.
+
+By default a container mount volume is used. Experienced admins can move the mount to a local mount outside the GitHub project.
+If PEM files are imported, the container needs to be restarted to load the new certificates.
+Or to create new keys and certificates based on a provided root key and certificate.
+For example to use the same CA with different server certificates on different servers.
+
+
+In order to use custom certificates provide the following two files in the **/certs** mount in PEM format.
 
 - cert.pem
 - key.pem
+
+
+## ClamAV container
+
+The ClamAV container uses is the official ClamAV Debian based image, which is also available for the ARM platform.
+Refer to the official [ClamAV container documentation](https://docs.clamav.net/manual/Installing/Docker.html) for details.
+By default the container requires at minimum 3 GB of RAM (4 GB are recommended). The additional RAM is mainly used during virus database update.
+
+The virus pattern database is located in `/var/lib/clamav`. The docker-compose configuration uses a Docker volume to ensure fast ClamAV availablity after restart.
+
 
 
 ## Tested environments

@@ -51,6 +51,26 @@ header()
 }
 
 
+dump_file()
+{
+
+  if [ -z "$2"]; then
+    return 0
+  fi
+
+  header "$1"
+
+  if [ -e "$2" ]; then
+    cat "$2"
+    print_delim
+  else
+    echo "No file: $2"
+  fi
+
+  echo
+}
+
+
 remove_file()
 {
   if [ -z "$1" ]; then
@@ -181,6 +201,13 @@ fi
 
 LINUX_PRETTY_NAME=$(cat /etc/os-release | grep "PRETTY_NAME="| cut -d= -f2 | xargs)
 
+
+if [ "$LOG_LEVEL" -ge "2" ]; then
+  dump_file "CA Root Certificate" /certs/ca_cert.pem
+  dump_file "Server Certificate" /certs/server_cert.pem
+fi
+
+
 if [ "$LOG_LEVEL" -ge "2" ]; then
   echo
   echo Environment
@@ -224,4 +251,3 @@ echo
 c-icap -f "$CICAP_CFG" -N -D -d "$CICAP_LOG_LEVEL"
 
 exit 0
-
