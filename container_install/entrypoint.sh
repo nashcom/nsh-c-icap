@@ -54,7 +54,7 @@ header()
 dump_file()
 {
 
-  if [ -z "$2"]; then
+  if [ -z "$2" ]; then
     return 0
   fi
 
@@ -173,7 +173,7 @@ SERVER_KEY=$CERT_DIR/server_key.pem
 SERVER_CERT=$CERT_DIR/server_cert.pem
 SERVER_CSR=$CERT_DIR/csr.pem
 
-CICAP_CFG=/c-icap.conf
+CICAP_CFG=/etc/c-icap/c-icap.conf
 
 
 if [ -z "$CICAP_LOG_LEVEL" ]; then

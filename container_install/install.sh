@@ -83,15 +83,17 @@ fi
 
 ln -s /usr/lib64/libicapapi.so /usr/lib64/libicapapi.so.0
 
-
-#cp /squidclamav.conf /etc/c-icap/squidclamav.conf
 cp /squidclamav.conf /usr/local/etc/squidclamav.conf
+#cp /squidclamav.conf /etc/c-icap/squidclamav.conf
+rm -f /squidclamav.conf
 
-chown c-icap:c-icap /var/log/c-icap
-chown c-icap:c-icap /run/c-icap
-chown c-icap:c-icap /certs
-chown c-icap:c-icap /etc/c-icap
-chown c-icap:c-icap /c-icap.conf
+cp /c-icap.conf /etc/c-icap/c-icap.conf
+rm -f /c-icap.conf
+
+chown -R c-icap:c-icap /var/log/c-icap
+chown -R c-icap:c-icap /run/c-icap
+chown -R c-icap:c-icap /certs
+chown -R c-icap:c-icap /etc/c-icap
 
 header "Cleanup"
 
