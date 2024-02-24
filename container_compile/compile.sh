@@ -37,6 +37,121 @@ log_error()
 }
 
 
+install_package()
+{
+  if [ -x /usr/bin/zypper ]; then
+    /usr/bin/zypper install -y "$@"
+
+  elif [ -x /usr/bin/dnf ]; then
+    /usr/bin/dnf install -y "$@"
+
+  elif [ -x /usr/bin/tdnf ]; then
+    /usr/bin/tdnf install -y "$@"
+
+  elif [ -x /usr/bin/microdnf ]; then
+    /usr/bin/microdnf install -y "$@"
+
+  elif [ -x /usr/bin/yum ]; then
+    /usr/bin/yum install -y "$@"
+
+  elif [ -x /usr/bin/apt-get ]; then
+    /usr/bin/apt-get install -y "$@"
+
+  elif [ -x /usr/bin/pacman ]; then
+    /usr/bin/pacman --noconfirm -Sy "$@"
+
+  elif [ -x /sbin/apk ]; then
+    /sbin/apk add "$@"
+
+  else
+    log_error "No package manager found!"
+    exit 1
+  fi
+}
+
+
+install_packages()
+{
+  local PACKAGE=
+  for PACKAGE in $*; do
+    install_package $PACKAGE
+  done
+}
+
+
+check_linux_update()
+{
+
+  # On Ubuntu and Debian update the cache in any case to be able to install additional packages
+  if [ -x /usr/bin/apt-get ]; then
+    header "Refreshing packet list via apt-get"
+    /usr/bin/apt-get update -y
+  fi
+
+  if [ -x /usr/bin/pacman ]; then
+    header "Refreshing packet list via pacman"
+    pacman --noconfirm -Sy
+  fi
+
+  # Install Linux updates if requested
+  if [ ! "$LinuxYumUpdate" = "yes" ]; then
+    return 0
+  fi
+
+  if [ -x /usr/bin/zypper ]; then
+
+    header "Updating Linux via zypper"
+    /usr/bin/zypper refresh
+    /usr/bin/zypper update -y
+
+  elif [ -x /usr/bin/dnf ]; then
+
+    header "Updating Linux via dnf"
+    /usr/bin/dnf update -y
+
+  elif [ -x /usr/bin/tdnf ]; then
+
+    header "Updating Linux via tdnf"
+    /usr/bin/tdnf update -y
+
+  elif [ -x /usr/bin/microdnf ]; then
+
+    header "Updating Linux via microdnf"
+    /usr/bin/microdnf update -y
+
+  elif [ -x /usr/bin/yum ]; then
+
+    header "Updating Linux via yum"
+    /usr/bin/yum update -y
+
+  elif [ -x /usr/bin/apt-get ]; then
+
+    header "Updating Linux via apt"
+    echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
+
+    /usr/bin/apt-get update -y
+
+    # Needed by Astra Linux, Ubuntu and Debian. Should be installed before updating Linux but after updating the repo!
+    if [ -x /usr/bin/apt-get ]; then
+      install_package apt-utils
+    fi
+
+    /usr/bin/apt-get upgrade -y
+
+  elif [ -x /usr/bin/pacman ]; then
+    header "Updating Linux via pacman"
+    pacman --noconfirm -Syu
+
+  elif [ -x /sbin/apk ]; then
+    header "Updating Linux via apk"
+    /sbin/apk update
+
+  else
+    log_error "No packet manager to update Linux"
+  fi
+}
+
+
 # --- End Helper functions ---
 
 if [ -z "$C_ICAP_VERSION" ]; then
@@ -51,15 +166,15 @@ fi
 
 
 if [ "$LINUX_UPDATE" = "yes" ]; then
-  header "Updating Linux"
-  microdnf -y update
+  check_linux_update
 else
   log_space "Warning: Not updating Linux"
 fi
 
 
 header "Install required packages"
-microdnf -y install git g++ make openssl openssl-devel autoconf diffutils libtool libatomic
+install_packages git g++ make openssl openssl-devel autoconf diffutils libtool libatomic automake
+
 
 mkdir -p /local/github
 

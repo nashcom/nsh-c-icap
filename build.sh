@@ -3,13 +3,14 @@
 # Copyright Nash!Com, Daniel Nashed 2024 - APACHE 2.0 see LICENSE
 ############################################################################
 
-CONTAINER_IMAGE_VERSION=0.9.0
+CONTAINER_IMAGE_VERSION=0.9.1
 C_ICAP_VERSION=0.6.2
 SQUIDCLAM_VERSION=7.3
 
 CONTAINER_IMAGE=nashcom/c-icap
 CONTAINER_FILE=dockerfile
 BASE_IMAGE=registry.access.redhat.com/ubi9/ubi-minimal
+#BASE_IMAGE=quay.io/centos/centos:stream9
 
 CONTAINER_NAME="Nash!Com c-icap container"
 CONTAINER_DESCRIPTION="Nash!Com c-icap container with ClamAV support"
