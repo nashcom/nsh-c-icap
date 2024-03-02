@@ -28,6 +28,8 @@ services:
 
     environment:
       LOG_LEVEL: 2
+      ORG_NAME: ${ORG_NAME}
+      CA_NAME: ${CA_NAME}
 
     ports:
       - 1344:1344
