@@ -1,6 +1,6 @@
 ARG BASE_IMAGE=registry.access.redhat.com/ubi9/ubi-minimal
 
-FROM $BASE_IMAGE as compile
+FROM $BASE_IMAGE AS compile
 ARG C_ICAP_VERSION=0.6.2
 ARG SQUIDCLAM_VERSION=7.3
 ARG LINUX_UPDATE=yes
@@ -10,7 +10,7 @@ USER root
 COPY container_compile /
 RUN /compile.sh
 
-FROM $BASE_IMAGE as c-icap
+FROM $BASE_IMAGE AS c-icap
 ARG CONTAINER_IMAGE_VERSION=
 ARG C_ICAP_VERSION=0.6.2
 ARG SQUIDCLAM_VERSION=7.3
